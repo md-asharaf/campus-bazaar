@@ -1,208 +1,90 @@
-"use client";
-
-import React from "react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-    ArrowUpRight,
-    Upload,
-    Search,
-    MessageCircle,
-    ShoppingCart,
-} from "lucide-react";
+import { Upload, Search, MessageCircle, ShoppingCart } from "lucide-react";
 import { AnimatedSection } from "../motion/AnimatedSection";
+import { motion } from "framer-motion";
 
-// Utility function for cn (if not available)
-function cnFallback(
-    ...classes: (string | undefined | null | boolean)[]
-): string {
-    return classes.filter(Boolean).join(" ");
-}
-
-const cnUtil = typeof cn !== "undefined" ? cn : cnFallback;
-
-// Interface for individual process card props
-interface ProcessCardProps {
-    icon: React.ElementType;
-    title: string;
-    description: string;
-    benefits: string[];
-    className?: string;
-}
-
-// Reusable Process Card Component
-const ProcessCard: React.FC<ProcessCardProps> = ({
-    icon: Icon,
-    title,
-    description,
-    benefits,
-    className,
-}) => (
-    <div
-        className={cnUtil(
-            "group relative w-full rounded-xl sm:rounded-lg border bg-card p-4 sm:p-6 transition-all cursor-pointer duration-300 hover:border-primary/60 hover:shadow-lg hover:scale-105 active:scale-95 touch-manipulation",
-            className,
-        )}
-    >
-        {/* Decorative Line - Visible on larger screens */}
-        <div className="absolute -left-[1px] top-1/2 hidden h-1/2 w-px -translate-y-1/2 bg-border transition-colors group-hover:bg-primary/60 lg:block" />
-        <div className="absolute left-1/2 top-0 h-px w-1/2 -translate-x-1/2 bg-border transition-colors group-hover:bg-primary/60 lg:hidden" />
-
-        {/* Icon Container */}
-        <div className="mb-3 sm:mb-4 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg duration-300 border bg-background text-primary shadow-sm transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-            <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
-        </div>
-
-        {/* Content */}
-        <div className="flex flex-col">
-            <h3 className="mb-2 text-base sm:text-lg font-semibold text-card-foreground">
-                {title}
-            </h3>
-            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 leading-relaxed">{description}</p>
-
-            {/* Benefits List */}
-            <ul className="space-y-1.5 sm:space-y-2">
-                {benefits.slice(0, 3).map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                        <div className="flex h-3 w-3 flex-shrink-0 items-center justify-center rounded-full bg-primary/20 mt-0.5">
-                            <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                        </div>
-                        <span className="text-xs text-muted-foreground leading-relaxed">
-                            {benefit}
-                        </span>
-                    </li>
-                ))}
-                {benefits.length > 3 && (
-                    <li className="text-xs text-primary font-medium pt-1">
-                        +{benefits.length - 3} more features
-                    </li>
-                )}
-            </ul>
-        </div>
-    </div>
-);
-const items = [
+const steps = [
     {
         icon: Upload,
         title: "List Your Item",
-        description:
-            "Take photos and create a listing for your used textbooks, electronics, furniture, or any other items you want to sell.",
-        benefits: [
-            "Easy photo upload with mobile app",
-            "Smart pricing suggestions",
-            "Category templates for quick listing",
-            "Automatic campus location detection",
-        ],
+        description: "Take photos and create a listing for your items in minutes."
     },
     {
         icon: Search,
         title: "Students Discover",
-        description:
-            "Other students on your campus can browse, search, and filter items by category, price, condition, and location.",
-        benefits: [
-            "Campus-specific search results",
-            "Filter by price and condition",
-            "Save favorite items for later",
-            "Get notifications for new listings",
-        ],
+        description: "Other students browse and find your items on campus."
     },
     {
         icon: MessageCircle,
         title: "Chat & Negotiate",
-        description:
-            "Use our built-in messaging system to chat with sellers, ask questions, negotiate prices, and arrange safe campus meetups.",
-        benefits: [
-            "Real-time messaging system",
-            "Safe campus meetup coordination",
-            "Price negotiation chat",
-            "Verified student profiles",
-        ],
+        description: "Connect with buyers through our messaging system."
     },
     {
         icon: ShoppingCart,
-        title: "Complete Transaction",
-        description:
-            "Meet safely on campus to inspect the item and complete the purchase with cash, Venmo, or other preferred payment methods.",
-        benefits: [
-            "Secure payment options",
-            "Transaction history tracking",
-            "Rating and review system",
-            "Dispute resolution support",
-        ],
-    },
+        title: "Complete Deal",
+        description: "Meet safely on campus and complete the transaction."
+    }
 ];
 
-// Main Campus Marketplace How It Works Component
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.2, delayChildren: 0.3 },
+    },
+};
+
 export const HowItWorksSection = () => {
     return (
-        <AnimatedSection className="w-full bg-background py-12 sm:py-16 lg:py-20">
-            <div className="container mx-auto px-4 sm:px-6">
-                {/* Header Section */}
-                <div className="text-center mb-12 sm:mb-16">
-                    <h2 className="mb-4 text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
-                        How Students Sell & Buy
-                    </h2>
-                    <p className="mb-6 sm:mb-8 text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                        Our platform makes it easy for students to sell their
-                        used products and find great deals from fellow students.
-                        Join thousands of students already using our
-                        marketplace.
-                    </p>
-                    <Button
-                        size="lg"
-                        className="hover:scale-105 duration-300 transition-all cursor-pointer touch-manipulation px-6 sm:px-8 py-3 sm:py-4"
+        <AnimatedSection>
+            <div className="px-4 sm:px-6 lg:px-8 bg-background">
+                <div className="max-w-6xl mx-auto">
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.5 }}
+                        transition={{ duration: 0.5 }}
+                        className="text-center mb-20"
                     >
-                        Start Selling
-                        <ArrowUpRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    </Button>
-                </div>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">
+                            How Students Buy & Sell on CampusBazaar
+                        </h2>
+                        <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+                            Simple steps to buy and sell with fellow students on your campus
+                        </p>
+                    </motion.div>
 
-                {/* Step Indicators with Connecting Line */}
-                <div className="relative mx-auto mb-8 sm:mb-12 w-full max-w-6xl">
-                    <div
-                        aria-hidden="true"
-                        className="absolute left-[12.5%] top-1/2 h-0.5 w-[75%] -translate-y-1/2 bg-border hidden lg:block"
-                    ></div>
-                    <div className="relative grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        {items.map((_, index) => (
-                            <div
+                    <motion.div
+                        variants={containerVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    >
+                        {steps.map((step, index) => (
+                            <motion.div
                                 key={index}
-                                className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center justify-self-center rounded-full bg-primary text-primary-foreground font-semibold ring-2 sm:ring-4 ring-background text-sm sm:text-base"
+                                className={`relative bg-card border rounded-2xl p-8 text-left overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group
+                                ${index === 0 && 'lg:col-span-2'}
+                                ${index === 3 && 'lg:col-span-2'}
+                                `}
                             >
-                                {index + 1}
-                            </div>
+                                {/* Creative and Bigger Step Count */}
+                                <div className="absolute top-2 -right-0 text-8xl font-bold text-primary/10 select-none pointer-events-none">
+                                    0{index + 1}
+                                </div>
+
+                                <div className="mb-6 w-18 h-18 bg-primary/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                    <step.icon className="w-9 h-9 text-primary" />
+                                </div>
+                                <h3 className="text-2xl font-semibold text-foreground mb-3">
+                                    {step.title}
+                                </h3>
+                                <p className="text-muted-foreground leading-relaxed">
+                                    {step.description}
+                                </p>
+                            </motion.div>
                         ))}
-                    </div>
-                </div>
-
-                {/* Process Cards Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-                    {items.map((item, index) => (
-                        <ProcessCard key={index} {...item} />
-                    ))}
-                </div>
-
-                {/* Mobile-specific additional info */}
-                <div className="mt-12 sm:mt-16 text-center">
-                    <div className="bg-blue-50 rounded-xl p-6 sm:p-8 max-w-4xl mx-auto">
-                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-foreground">
-                            🎓 Student Benefits
-                        </h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm sm:text-base">
-                            <div className="text-center">
-                                <div className="font-semibold text-blue-600">Save 60%</div>
-                                <div className="text-muted-foreground">On textbooks</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="font-semibold text-green-600">Earn Extra</div>
-                                <div className="text-muted-foreground">Sell unused items</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="font-semibold text-purple-600">Safe Deals</div>
-                                <div className="text-muted-foreground">Campus community</div>
-                            </div>
-                        </div>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </AnimatedSection>
