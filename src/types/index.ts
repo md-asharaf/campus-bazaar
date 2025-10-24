@@ -144,3 +144,27 @@ export interface Chat {
     user2?: User;
     messages?: Message[];
 }
+
+export interface Message {
+    id: string;
+    senderId: string;
+    senderName: string;
+    content: string;
+    timestamp: Date;
+    isRead: boolean;
+    avatar?: string;
+    isDelivered: boolean
+}
+
+export interface Conversation {
+    id: string;
+    participantId: string;
+    participantName: string;
+    participantAvatar?: string;
+    lastMessage: string;
+    lastMessageTime: Date;
+    unreadCount: number;
+    itemTitle?: string;
+    itemPrice?: string;
+    itemImage?: string;
+}
