@@ -90,7 +90,7 @@ export const TestimonialsSection = () => {
 
     return (
         <AnimatedSection>
-            <div className=" px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-background to-muted/20">
+            <div className=" px-4 sm:px-6 lg:px-8 bg-linear-to-br from-background to-muted/20">
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
                     <div className="text-center mb-16">
@@ -122,7 +122,7 @@ export const TestimonialsSection = () => {
                             {testimonialsData.map((testimonial, index) => (
                                 <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
                                     <div className="h-full bg-card border rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col">
-                                        <div className="flex-grow">
+                                        <div className="grow">
                                             {/* Quote Icon */}
                                             <div className="flex justify-end mb-2">
                                                 <Quote className="w-6 h-6 text-primary/20" />

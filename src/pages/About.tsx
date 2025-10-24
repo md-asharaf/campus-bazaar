@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 
 export default function About() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 dark:from-background dark:via-background dark:to-muted/10 pt-24 pb-16">
+        <div className="min-h-screen flex flex-col">
+            <div className="bg-linear-to-br from-background via-background to-muted/30 dark:from-background dark:via-background dark:to-muted/10 py-8 md:py-16 flex-1">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="text-center mb-16">
@@ -21,7 +22,7 @@ export default function About() {
                 <Card className="mb-12">
                     <CardContent className="p-8">
                         <div className="text-center mb-8">
-                            <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <div className="w-16 h-16 bg-linear-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
                                 <span className="text-2xl">🎯</span>
                             </div>
                             <h2 className="text-2xl font-bold text-foreground mb-4">Our Mission</h2>
@@ -139,6 +140,7 @@ export default function About() {
                         </div>
                     </CardContent>
                 </Card>
+            </div>
             </div>
         </div>
     );

@@ -18,25 +18,16 @@ const recentSearches = [
     "iPhone 14"
 ];
 
-// const trendingItems = [
-//     { name: "MacBook Pro 16\"", price: "₹1,85,000", category: "Electronics" },
-//     { name: "Complete CSE Books Set", price: "₹3,200", category: "Books" },
-//     { name: "Gaming Setup", price: "₹45,000", category: "Electronics" },
-//     { name: "Study Table", price: "₹4,500", category: "Furniture" }
-// ];
-
 export function SearchPopover() {
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState("");
     const navigate = useNavigate();
 
-    // Toggle with Ctrl+K (or Cmd+K on Mac)
     useHotkeys("ctrl+k, cmd+k", (e) => {
         e.preventDefault();
         setOpen((prev) => !prev);
     });
 
-    // Handle search submit (Enter key or selection)
     const handleSearch = () => {
         if (query.trim()) {
             setOpen(false);
@@ -44,7 +35,6 @@ export function SearchPopover() {
         }
     };
 
-    // Fix: clear query on dialog close
     const handleOpenChange = (open: boolean) => {
         setOpen(open);
         if (!open) setQuery("");
@@ -108,58 +98,6 @@ export function SearchPopover() {
                             ))}
                         </CommandGroup>
                     )}
-                    {/* Categories */}
-                    <CommandGroup heading="Popular Categories">
-                        {/* <CommandItem className="cursor-pointer flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary">
-                            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                                📚
-                            </div>
-                            <div className="flex-1">
-                                <p className="font-medium">Textbooks & Study Materials</p>
-                                <p className="text-xs text-muted-foreground">285+ items</p>
-                            </div>
-                        </CommandItem>
-
-                        <CommandItem className="cursor-pointer flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary">
-                            <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
-                                💻
-                            </div>
-                            <div className="flex-1">
-                                <p className="font-medium">Electronics & Gadgets</p>
-                                <p className="text-xs text-muted-foreground">156+ items</p>
-                            </div>
-                        </CommandItem>
-
-                        <CommandItem className="cursor-pointer flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary">
-                            <div className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center">
-                                🪑
-                            </div>
-                            <div className="flex-1">
-                                <p className="font-medium">Furniture & Dorm Items</p>
-                                <p className="text-xs text-muted-foreground">98+ items</p>
-                            </div>
-                        </CommandItem>
-
-                        <CommandItem className="cursor-pointer flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary">
-                            <div className="w-8 h-8 bg-pink-500/10 rounded-lg flex items-center justify-center">
-                                👕
-                            </div>
-                            <div className="flex-1">
-                                <p className="font-medium">Clothing & Accessories</p>
-                                <p className="text-xs text-muted-foreground">234+ items</p>
-                            </div>
-                        </CommandItem>
-
-                        <CommandItem className="cursor-pointer flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary">
-                            <div className="w-8 h-8 bg-yellow-500/10 rounded-lg flex items-center justify-center">
-                                🚲
-                            </div>
-                            <div className="flex-1">
-                                <p className="font-medium">Bicycles & Transport</p>
-                                <p className="text-xs text-muted-foreground">67+ items</p>
-                            </div>
-                        </CommandItem> */}
-                    </CommandGroup>
                 </CommandList>
             </CommandDialog>
         </>

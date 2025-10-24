@@ -1,66 +1,70 @@
-import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
-import { AuthProvider } from "./contexts/AuthContext";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-
-// Pages
-import Home from "./pages/Home";
-import Categories from "./pages/Categories";
-import Messages from "./pages/Messages";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Home } from "./pages/Home";
+import { Categories } from "./pages/Categories";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
-import ChatContainer from "./components/chat/ChatContainer";
-import type { Conversation } from "./types";
-import ChatLayout from "./components/layout/ChatLayout";
+import { ChatContainer } from "./components/chat/ChatContainer";
+import { AuthProvider } from "./providers/AuthProvider";
+import ChatList from "./components/chat/ChatList";
+import QueryProvider from "./providers/QueryProvider";
+import { Products } from "./pages/Products";
+import { MainLayout } from "./components/layout/MainLayout";
+import { PrivateLayout } from "./components/layout/PrivateLayout";
+import { Register } from "./pages/Register";
+import { AdminAuthProvider } from "./providers/AdminAuthProvider";
+import { Dashboard } from "./pages/Dashboard";
+import { ItemDetails } from "./pages/ItemDetails";
+import { CreateItem } from "./pages/CreateItem";
+import { Wishlist } from "./pages/Wishlist";
+import { UserProfile } from "./pages/UserProfile";
+import { AdminDashboard } from "./pages/AdminDashboard";
+import { Verification } from "./pages/Verification";
+import { Toaster } from "./components/ui/sonner";
+import { Login } from "./pages/Login";
 
 
-const conversation: Conversation = {
-    id: "xyz",
-    participantId: "user123",
-    participantName: "John Doe",
-    participantAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-    lastMessage: "Is this item still available?",
-    lastMessageTime: new Date("2024-01-15T10:30:00Z"),
-    unreadCount: 2,
-    itemTitle: "MacBook Pro 13-inch",
-    itemPrice: "$999",
-    itemImage: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?w=300&h=300&fit=crop"
-};
+export default function App() {
+  return (
+    <QueryProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Regular routes with flexible header and footer */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/items" element={<Products />} />
+              <Route path="/items/:itemId" element={<ItemDetails />} />
+              <Route path="/sell" element={<CreateItem />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/profile/:userId" element={<UserProfile />} />
+              <Route path="/verify" element={<Verification />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+            <Route>
+              <Route path="/admin" element={
+                <AdminAuthProvider>
+                  <AdminDashboard />
+                </AdminAuthProvider>
+              } />
+              <Route path="/login" element={
+                <AdminAuthProvider>
+                  <Login />
+                </AdminAuthProvider>
+              } />
+            </Route>
 
-
-function AppContent() {
-    const location = useLocation();
-    const isHomePage = location.pathname === '/';
-    const isChatPage = location.pathname.startsWith('/chat');
-
-    const showHeaderFooter = !isHomePage && !isChatPage;
-
-function App() {
-    return (
-        <div className="bg-background text-foreground font-sans overflow-x-hidden min-h-screen flex flex-col">
-            {showHeaderFooter && <Header />}
-
-            <main className="flex-1">
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/categories" element={<Categories />} />
-                    <Route path="/messages" element={<Messages />} />
-                    <Route path="/about" element={<About />} />
-                    <Route
-                        path="/chat/:chatId"
-                        element={
-                            <ChatLayout>
-                                <ChatContainer conversation={conversation} />
-                            </ChatLayout>
-                        }
-                    />
-                    <Route path="*" element={<NotFound />} />
-                </Routes>
-            </main>
-
-            {showHeaderFooter && <Footer />}
-        </div>
-    )
+            <Route element={<PrivateLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/messages" element={<ChatList />} />
+              <Route path="/chat/:chatId" element={<ChatContainer />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+        <Toaster richColors />
+      </AuthProvider>
+    </QueryProvider >
+  );
 }
-
-export default App

@@ -22,7 +22,7 @@ export const Hero = () => {
                     <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl leading-tight sm:leading-tight md:leading-tight">
                         Stop Overpaying.
                         <br />
-                        <span className="bg-gradient-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent">
+                        <span className="bg-linear-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent">
                             Start Trading on Campus.
                         </span>
                     </h1>

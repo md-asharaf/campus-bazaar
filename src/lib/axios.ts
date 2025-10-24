@@ -1,8 +1,8 @@
-import { refreshTokens } from "@/queries/auth";
+import { refreshTokens } from "@/services/auth.service";
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:3000",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

@@ -1,16 +1,9 @@
-import type { User } from "@/types";
-import { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { logout as signout } from "@/queries/auth";
-import { getMe } from "@/queries/profile";
+import type { User, ApiResponse } from "@/types";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { logout as signout } from "@/services/auth.service";
+import { getMe } from "@/services/profile.service";
 
-interface AuthContextType {
-    user: User | null;
-    loading: boolean;
-    login: (userData: User) => void;
-    logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext } from "@/contexts/AuthContext";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
@@ -22,13 +15,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         fetched.current = true;
         (async () => {
             try {
-                const res = await getMe();
-                setUser(res?.data?.user || null);
+                const res: ApiResponse<{ user: User }> = await getMe();
+                if (res?.data?.user) {
+                    setUser(res.data.user);
+                } else {
+                    setUser(null);
+                }
+            } catch (error) {
+                console.error('Failed to fetch user data:', error);
+                setUser(null);
             } finally {
                 setLoading(false);
             }
         })();
     }, []);
+
+
 
     const login = useCallback((user: User) => {
         setUser(user);
@@ -46,10 +48,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             {children}
         </AuthContext.Provider>
     );
-}
-
-export function useAuth() {
-    const context = useContext(AuthContext);
-    if (!context) throw new Error("useAuth must be used within AuthProvider");
-    return context;
 }

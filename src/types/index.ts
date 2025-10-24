@@ -1,3 +1,10 @@
+// API Response Type
+export interface ApiResponse<T = any> {
+    message: string;
+    success: boolean;
+    data: T;
+}
+
 // Enums
 export enum AdminRole {
     SUPER = "SUPER",
@@ -64,7 +71,7 @@ export interface Image {
     items?: Item[];
     verifications?: Verification[];
     Category?: Category[];
-    media?: Media[];
+    media?: string[];
 }
 
 export interface Item {
@@ -73,6 +80,7 @@ export interface Item {
     price: number;
     sellerId: string;
     isVerified: boolean;
+    seller?: User;
     isSold: boolean;
     categoryId?: string | null;
     createdAt: string;
@@ -121,7 +129,7 @@ export interface Message {
     sentAt: string;
     sender?: User;
     chat?: Chat;
-    media?: Media[];
+    media?: string[];
 }
 
 export interface Media {
@@ -145,26 +153,11 @@ export interface Chat {
     messages?: Message[];
 }
 
-export interface Message {
-    id: string;
-    senderId: string;
-    senderName: string;
-    content: string;
-    timestamp: Date;
-    isRead: boolean;
-    avatar?: string;
-    isDelivered: boolean
-}
-
 export interface Conversation {
     id: string;
-    participantId: string;
-    participantName: string;
-    participantAvatar?: string;
-    lastMessage: string;
-    lastMessageTime: Date;
+    otherUser: User;
+    latestMessage: Message;
     unreadCount: number;
-    itemTitle?: string;
-    itemPrice?: string;
-    itemImage?: string;
+    createdAt: string;
+    updatedAt: string;
 }
