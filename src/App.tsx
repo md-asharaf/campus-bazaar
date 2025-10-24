@@ -35,6 +35,7 @@ function AppContent() {
 
     const showHeaderFooter = !isHomePage && !isChatPage;
 
+function App() {
     return (
         <div className="bg-background text-foreground font-sans overflow-x-hidden min-h-screen flex flex-col">
             {showHeaderFooter && <Header />}
@@ -59,15 +60,7 @@ function AppContent() {
 
             {showHeaderFooter && <Footer />}
         </div>
-    );
+    )
 }
 
-export default function App() {
-    return (
-        <BrowserRouter>
-            <AuthProvider>
-                <AppContent />
-            </AuthProvider>
-        </BrowserRouter>
-    );
-}
+export default App
