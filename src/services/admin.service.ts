@@ -108,7 +108,7 @@ class AdminService {
         if (params.page) searchParams.append('page', params.page.toString());
         if (params.limit) searchParams.append('limit', params.limit.toString());
         if (params.status) searchParams.append('status', params.status);
-
+        searchParams.append('includeRelations', 'true');
         const response = await instance.get(`/admins/verification?${searchParams.toString()}`);
         return response.data;
     }

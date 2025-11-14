@@ -2,7 +2,7 @@
 // This file exports all hooks for easy importing throughout the application
 
 // Query Keys
-export { queryKeys, getQueryKeysToInvalidate } from './queryKeys';
+export { queryKeys, getQueryKeysToInvalidate } from './query-keys';
 
 // Auth hooks
 export {
@@ -13,17 +13,15 @@ export {
   useGoogleAuthCallback,
   useAdminLogin,
   useAdminVerifyLogin,
-} from './useAuth';
+} from './use-auth';
 
 // Profile hooks
 export {
-  useProfile,
   useUpdateProfile,
   useVerifyUser,
-  useProfileStatus,
   usePrefetchProfile,
   useOptimisticProfileUpdate,
-} from './useProfile';
+} from './use-profile';
 
 // Items hooks
 export {
@@ -40,7 +38,7 @@ export {
   useRecentItems,
   useItemsByPriceRange,
   useOptimisticItemUpdate,
-} from './useItems';
+} from './use-items';
 
 // Categories hooks
 export {
@@ -51,7 +49,7 @@ export {
   useCategoryName,
   useCategoriesWithCounts,
   useFilteredCategories,
-} from './useCategories';
+} from './use-categories';
 
 // Wishlist hooks
 export {
@@ -65,7 +63,7 @@ export {
   useOptimisticWishlist,
   usePrefetchWishlist,
   useWishlistItems,
-} from './useWishlist';
+} from './use-wishlist';
 
 // Feedback hooks
 export {
@@ -78,7 +76,7 @@ export {
   usePrefetchFeedback,
   useSubmitFeedback,
   useFeedbackValidation,
-} from './useFeedback';
+} from './use-feedback';
 
 // Search hooks
 export {
@@ -92,7 +90,7 @@ export {
   usePrefetchSearch,
   useAdvancedSearch,
   useSearchAnalytics,
-} from './useSearch';
+} from './use-search';
 
 // Chat hooks
 export {
@@ -107,7 +105,7 @@ export {
   useOptimisticMessage,
   usePrefetchChat,
   useChatRealtime,
-} from './useChat';
+} from './use-chat';
 
 // Admin hooks
 export {
@@ -146,7 +144,7 @@ export {
   // Dashboard and utilities
   useAdminDashboardStats,
   useBulkUserActions,
-} from './useAdmin';
+} from './use-admin';
 
 // Health hooks
 export {
@@ -160,7 +158,7 @@ export {
   useHealthStatusIndicator,
   usePrefetchHealth,
   useHealthMetrics,
-} from './useHealth';
+} from './use-health';
 
 // Type exports for convenience
 export type { QueryKey } from '@tanstack/react-query';

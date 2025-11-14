@@ -61,6 +61,7 @@ export interface Verification {
     createdAt: string;
     updatedAt: string;
     image?: Image;
+    user?: User;
 }
 
 export interface Image {

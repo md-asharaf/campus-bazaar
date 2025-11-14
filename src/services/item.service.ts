@@ -68,12 +68,16 @@ class ItemService {
     async searchItems(params: SearchParams = {}) {
         const searchParams = new URLSearchParams();
         
-        if (params.q) searchParams.append('q', params.q);
+        // Add default parameters to ensure we always get data
+        searchParams.append('available', 'true'); // Only show available items by default
+        searchParams.append('page', (params.page || 1).toString());
+        searchParams.append('limit', (params.limit || 50).toString());
+        searchParams.append('includeRelations', 'true'); // Include images and category data
+        
+        if (params.q) searchParams.append('search', params.q);
         if (params.category) searchParams.append('category', params.category);
         if (params.minPrice !== undefined) searchParams.append('minPrice', params.minPrice.toString());
         if (params.maxPrice !== undefined) searchParams.append('maxPrice', params.maxPrice.toString());
-        if (params.page) searchParams.append('page', params.page.toString());
-        if (params.limit) searchParams.append('limit', params.limit.toString());
         if (params.sortBy) searchParams.append('sortBy', params.sortBy);
         if (params.sortOrder) searchParams.append('sortOrder', params.sortOrder);
 

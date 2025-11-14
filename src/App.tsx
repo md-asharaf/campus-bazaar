@@ -1,70 +1,77 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Home } from "./pages/Home";
-import { Categories } from "./pages/Categories";
-import About from "./pages/About";
-import NotFound from "./pages/NotFound";
-import { ChatContainer } from "./components/chat/ChatContainer";
-import { AuthProvider } from "./providers/AuthProvider";
-import ChatList from "./components/chat/ChatList";
-import QueryProvider from "./providers/QueryProvider";
-import { Products } from "./pages/Products";
-import { MainLayout } from "./components/layout/MainLayout";
-import { PrivateLayout } from "./components/layout/PrivateLayout";
-import { Register } from "./pages/Register";
-import { AdminAuthProvider } from "./providers/AdminAuthProvider";
-import { Dashboard } from "./pages/Dashboard";
-import { ItemDetails } from "./pages/ItemDetails";
-import { CreateItem } from "./pages/CreateItem";
-import { Wishlist } from "./pages/Wishlist";
-import { UserProfile } from "./pages/UserProfile";
-import { AdminDashboard } from "./pages/AdminDashboard";
-import { Verification } from "./pages/Verification";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Home } from "./pages/home";
+import { Categories } from "./pages/categories";
+import About from "./pages/about";
+import NotFound from "./pages/not-found";
+import { ChatContainer } from "./components/chat/container";
+import { AuthProvider } from "./providers/auth-provider";
+import ChatList from "./components/chat/list";
+import QueryProvider from "./providers/query-provider";
+import { Products } from "./pages/products";
+import { MainLayout } from "./components/layout/layout";
+import { PrivateLayout } from "./components/layout/private-layout";
+import { Register } from "./pages/register";
+import { Dashboard } from "./pages/dashboard";
+import { ItemDetails } from "./pages/item";
+import { CreateItem } from "./pages/create-item";
+import { Wishlist } from "./pages/wishlist";
+import { UserProfile } from "./pages/profile";
+import { Verification } from "./pages/verification";
 import { Toaster } from "./components/ui/sonner";
-import { Login } from "./pages/Login";
-
+import { Login } from "./pages/login";
+import { AdminAuthProvider } from "./providers/admin-provider";
+import { AdminOverview } from "./pages/admin/overview";
+import { AdminUsersPage } from "./pages/admin/users";
+import { AdminItemsPage } from "./pages/admin/items";
+import { AdminVerificationsPage } from "./pages/admin/verifications";
+import { AdminAnalyticsPage } from "./pages/admin/analytics";
+import { AdminLayout } from "./pages/admin/layout";
 
 export default function App() {
   return (
     <QueryProvider>
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Regular routes with flexible header and footer */}
-            <Route element={<MainLayout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/categories" element={<Categories />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/items" element={<Products />} />
-              <Route path="/items/:itemId" element={<ItemDetails />} />
-              <Route path="/sell" element={<CreateItem />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/profile/:userId" element={<UserProfile />} />
-              <Route path="/verify" element={<Verification />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-            <Route>
-              <Route path="/admin" element={
-                <AdminAuthProvider>
-                  <AdminDashboard />
-                </AdminAuthProvider>
-              } />
-              <Route path="/login" element={
-                <AdminAuthProvider>
-                  <Login />
-                </AdminAuthProvider>
-              } />
-            </Route>
+        <AdminAuthProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Main public layout */}
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/categories" element={<Categories />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/items" element={<Products />} />
+                <Route path="/items/:itemId" element={<ItemDetails />} />
+                <Route path="/sell" element={<CreateItem />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/profile/:userId" element={<UserProfile />} />
+                <Route path="/verify" element={<Verification />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
 
-            <Route element={<PrivateLayout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="/messages" element={<ChatList />} />
-              <Route path="/chat/:chatId" element={<ChatContainer />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-        <Toaster richColors />
+              {/* Private user layout */}
+              <Route element={<PrivateLayout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/messages" element={<ChatList />} />
+                <Route path="/chat/:chatId" element={<ChatContainer />} />
+              </Route>
+
+              {/* Admin routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminOverview />} />
+                <Route path="users" element={<AdminUsersPage />} />
+                <Route path="items" element={<AdminItemsPage />} />
+                <Route path="verifications" element={<AdminVerificationsPage />} />
+                <Route path="analytics" element={<AdminAnalyticsPage />} />
+                <Route path="*" element={<Navigate to="/admin" replace />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </AdminAuthProvider>
       </AuthProvider>
-    </QueryProvider >
+
+      <Toaster richColors />
+    </QueryProvider>
   );
 }
