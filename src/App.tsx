@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Home } from "./pages/home";
 import { Categories } from "./pages/categories";
 import About from "./pages/about";
@@ -22,13 +22,13 @@ import { Login } from "./pages/login";
 import StudentLoginPage from "./pages/student-login";
 import AdminLoginPage from "./pages/admin-login";
 
-// import { AdminAuthProvider } from "./providers/admin-provider";
-// import { AdminOverview } from "./pages/admin/overview";
-// import { AdminUsersPage } from "./pages/admin/users";
-// import { AdminItemsPage } from "./pages/admin/items";
-// import { AdminVerificationsPage } from "./pages/admin/verifications";
-// import { AdminAnalyticsPage } from "./pages/admin/analytics";
-// import { AdminLayout } from "./pages/admin/layout";
+import { AdminAuthProvider } from "./providers/admin-provider";
+import { AdminOverview } from "./pages/admin/overview";
+import { AdminUsersPage } from "./pages/admin/users";
+import { AdminItemsPage } from "./pages/admin/items";
+import { AdminVerificationsPage } from "./pages/admin/verifications";
+import { AdminAnalyticsPage } from "./pages/admin/analytics";
+import { AdminLayout } from "./pages/admin/layout";
 
 export default function App() {
   return (
@@ -36,7 +36,7 @@ export default function App() {
       <BrowserRouter>
 
         <AuthProvider>
-          {/*<AdminAuthProvider>*/}
+          <AdminAuthProvider>
 
             <Routes>
 
@@ -68,18 +68,18 @@ export default function App() {
               <Route path="/admin-login" element={<AdminLoginPage />} />
 
               {/* ADMIN ROUTES */}
-              {/*<Route path="/admin" element={<AdminLayout />}>
+              <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverview />} />
                 <Route path="users" element={<AdminUsersPage />} />
                 <Route path="items" element={<AdminItemsPage />} />
                 <Route path="verifications" element={<AdminVerificationsPage />} />
                 <Route path="analytics" element={<AdminAnalyticsPage />} />
                 <Route path="*" element={<Navigate to="/admin" replace />} />
-              </Route>*/}
+              </Route>
 
             </Routes>
 
-          {/*</AdminAuthProvider>*/}
+          </AdminAuthProvider>
         </AuthProvider>
 
         <Toaster richColors />
