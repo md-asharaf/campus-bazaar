@@ -53,10 +53,10 @@ export default function App() {
                 <Route path="/verify" element={<Verification />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
+                <Route path="/dashboard" element={<Dashboard />} />
 
               {/* USER PRIVATE ROUTES */}
               <Route element={<PrivateLayout />}>
-                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/messages" element={<ChatList />} />
                 <Route path="/chat/:chatId" element={<ChatContainer />} />

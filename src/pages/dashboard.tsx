@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { useMyItems } from '@/hooks/api';
 import { Button } from '@/components/ui/button';
@@ -29,11 +29,128 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import Cookies from 'js-cookie';
+import type { User as UserType, ApiResponse } from '@/types';
+import { getMe } from '@/services/profile.service';
+import { handleGoogleCallback } from '@/services/auth.service';
+
+/**
+ * Dashboard page
+ *
+ * Added Google OAuth token handling:
+ * - On first mount, if accessToken / refreshToken are present in URL query, persist them to cookies
+ * - Scrub tokens from URL to avoid exposing them
+ * - If only an OAuth 'code' param exists (backend used authorization code flow without embedding tokens), call handleGoogleCallback(code)
+ * - After persisting tokens, fetch /users/me and update auth context via login()
+ *
+ * This complements the AuthProvider's initial fetch but ensures direct redirects to /dashboard?accessToken=... are handled immediately.
+ */
 
 export function Dashboard() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, login } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [shouldRedirect, setShouldRedirect] = useState(false);
+  const oauthHandledRef = useRef(false);
+
+  // Attempt immediate OAuth token capture / code exchange if user not yet loaded
+  useEffect(() => {
+    if (oauthHandledRef.current) return;
+    if (user) {
+      // Already authenticated; no need to process tokens
+      oauthHandledRef.current = true;
+      return;
+    }
+
+    let modified = false;
+    const url = new URL(window.location.href);
+    const accessToken = url.searchParams.get('accessToken');
+    const refreshToken = url.searchParams.get('refreshToken');
+    const code = url.searchParams.get('code');
+
+    const persistTokens = (at?: string | null, rt?: string | null) => {
+      if (at) {
+        Cookies.set('user_accessToken', at, {
+          path: '/',
+          sameSite: 'lax',
+          secure: true,
+          expires: 1 / (24 * 4), // ~15 minutes
+        });
+      }
+      if (rt) {
+        Cookies.set('user_refreshToken', rt, {
+          path: '/',
+          sameSite: 'lax',
+          secure: true,
+          expires: 7, // 7 days
+        });
+      }
+    };
+
+    const scrubTokenParams = () => {
+      if (url.searchParams.has('accessToken')) {
+        url.searchParams.delete('accessToken');
+        modified = true;
+      }
+      if (url.searchParams.has('refreshToken')) {
+        url.searchParams.delete('refreshToken');
+        modified = true;
+      }
+      if (url.searchParams.has('code')) {
+        // If a code param was used just for immediate exchange, we can safely remove it
+        url.searchParams.delete('code');
+        modified = true;
+      }
+      if (modified) {
+        const newUrl = url.pathname + (url.search ? url.search : '') + url.hash;
+        window.history.replaceState({}, '', newUrl);
+      }
+    };
+
+    const finalize = () => {
+      oauthHandledRef.current = true;
+    };
+
+    (async () => {
+      try {
+        // Case 1: Tokens directly in URL
+        if (accessToken) {
+          persistTokens(accessToken, refreshToken);
+          scrubTokenParams();
+          // Fetch user immediately
+          const res: ApiResponse<{ user: UserType }> = await getMe();
+          if (res?.data?.user) {
+            login(res.data.user);
+          }
+          finalize();
+          return;
+        }
+
+        // Case 2: Authorization code - perform backend callback flow
+        if (code) {
+          try {
+            await handleGoogleCallback(code);
+            // Tokens should now be in cookies; scrub code param
+            scrubTokenParams();
+            const res: ApiResponse<{ user: UserType }> = await getMe();
+            if (res?.data?.user) {
+              login(res.data.user);
+            }
+          } catch (err) {
+            console.error('Google callback handling failed:', err);
+          } finally {
+            finalize();
+          }
+          return;
+        }
+
+        // Nothing to handle
+        finalize();
+      } catch (e) {
+        console.error('OAuth handling failed:', e);
+        finalize();
+      }
+    })();
+  }, [user, login]);
 
   const { data, isLoading: itemsLoading } = useMyItems({
     enabled: activeTab === 'overview' || activeTab === 'items'
@@ -80,44 +197,44 @@ export function Dashboard() {
       <div className="bg-background flex-1">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16 border-4 border-primary/20">
-                  <AvatarImage src={currentUser?.avatar || ''} alt={currentUser?.name} />
-                  <AvatarFallback className="text-lg font-semibold bg-primary/10">
-                    {currentUser?.name?.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-2xl font-bold text-foreground">
-                      Welcome back, {currentUser?.name?.split(' ')[0]}!
-                    </h1>
-                    {currentUser?.isVerified && (
-                      <BadgeCheck className="h-5 w-5 text-blue-500" />
-                    )}
+            <div className="mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-16 w-16 border-4 border-primary/20">
+                    <AvatarImage src={currentUser?.avatar || ''} alt={currentUser?.name} />
+                    <AvatarFallback className="text-lg font-semibold bg-primary/10">
+                      {currentUser?.name?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h1 className="text-2xl font-bold text-foreground">
+                        Welcome back, {currentUser?.name?.split(' ')[0]}!
+                      </h1>
+                      {currentUser?.isVerified && (
+                        <BadgeCheck className="h-5 w-5 text-blue-500" />
+                      )}
+                    </div>
+                    <p className="text-muted-foreground">
+                      {currentUser?.branch} • Year {currentUser?.year}
+                    </p>
                   </div>
-                  <p className="text-muted-foreground">
-                    {currentUser?.branch} • Year {currentUser?.year}
-                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Link to="/sell">
+                    <Button className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Sell Item
+                    </Button>
+                  </Link>
+                  <Link to="/profile/edit">
+                    <Button variant="outline" size="icon">
+                      <Settings className="h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Link to="/sell">
-                  <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Sell Item
-                  </Button>
-                </Link>
-                <Link to="/profile/edit">
-                  <Button variant="outline" size="icon">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
             </div>
-          </div>
 
           {/* Verification Alert */}
           {!currentUser?.isVerified && (

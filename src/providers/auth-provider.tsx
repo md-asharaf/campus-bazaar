@@ -13,22 +13,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (fetched.current) return;
         fetched.current = true;
-        // Capture access token from URL and temporarily attach Authorization header (without assuming cookie names)
-
-        try {
-            const url = new URL(window.location.href);
-            const at = url.searchParams.get('accessToken');
-            const rt = url.searchParams.get('refreshToken');
-            // Clean tokens from URL while preserving other params
-            if (at || rt) {
-                url.searchParams.delete('accessToken');
-                url.searchParams.delete('refreshToken');
-                const newUrl = url.pathname + (url.search ? url.search : '') + url.hash;
-                window.history.replaceState({}, '', newUrl);
-            }
-        } catch (error) {
-            console.error('Failed to parse URL:', error);
-        }
         (async () => {
             try {
                 const res: ApiResponse<{ user: User }> = await getMe();

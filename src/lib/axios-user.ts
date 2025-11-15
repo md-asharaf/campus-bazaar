@@ -33,6 +33,7 @@ function flushQueue(err?: any) {
 // Attach access token from user cookies
 instance.interceptors.request.use((config) => {
   const at = Cookies.get("user_accessToken");
+  console.log(at);
   if (at) {
     config.headers = config.headers ?? {};
     (config.headers as any).Authorization = `Bearer ${at}`;
@@ -45,7 +46,8 @@ instance.interceptors.response.use(
   (response) => {
     const at = response?.data?.data?.accessToken ?? response?.data?.accessToken;
     const rt = response?.data?.data?.refreshToken ?? response?.data?.refreshToken;
-
+    console.log(at);
+    console.log(rt);
     if (at) {
       Cookies.set("user_accessToken", at, {
         path: "/",
