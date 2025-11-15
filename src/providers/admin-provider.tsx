@@ -5,7 +5,7 @@ import { adminLogout } from "@/services/auth.service";
 import type { Admin, ApiResponse } from "@/types";
 import { adminService } from "@/services";
 import Cookies from "js-cookie";
-import instance from "@/lib/axios";
+import instance from "@/lib/axios-admin";
 
 export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     const [admin, setAdmin] = useState<Admin | null>(null);

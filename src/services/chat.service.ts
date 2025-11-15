@@ -1,4 +1,4 @@
-import axios from '@/lib/axios';
+import axios from '@/lib/axios-user';
 
 class ChatService {
   async getMyChats(page = 1, limit = 10) {

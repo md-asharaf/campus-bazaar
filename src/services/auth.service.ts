@@ -1,4 +1,5 @@
-import instance from "@/lib/axios"
+import userInstance from "@/lib/axios-user"
+import adminInstance from "@/lib/axios-admin"
 import Cookies from "js-cookie"
 
 // Types
@@ -22,7 +23,7 @@ type AdminVerifyLoginData = {
 
 // User Auth Services
 const register = async (data: RegisterData) => {
-    const response = await instance.post(`/auth/users/register`, data);
+    const response = await userInstance.post(`/auth/users/register`, data);
     const at = response?.data?.data?.accessToken ?? response?.data?.accessToken;
     const rt = response?.data?.data?.refreshToken ?? response?.data?.refreshToken;
 
@@ -38,26 +39,23 @@ const register = async (data: RegisterData) => {
 }
 
 const logout = async () => {
-    const response = await instance.post(`/auth/users/logout`);
+    const response = await userInstance.post(`/auth/users/logout`);
     Cookies.remove('user_accessToken', { path: '/' });
     Cookies.remove('user_refreshToken', { path: '/' });
-    // Remove legacy cookie keys if present
-    Cookies.remove('accessToken', { path: '/' });
-    Cookies.remove('refreshToken', { path: '/' });
-    delete (instance.defaults.headers as any).Authorization;
+// Legacy cookie cleanup removed; Authorization header handled by axios interceptors
     return response.data;
 }
 
 const refreshTokens = async () => {
-    const response = await instance.post(`/auth/users/refresh-tokens`);
+    const response = await userInstance.post(`/auth/users/refresh-tokens`);
     return response.data;
 }
 const refreshUserTokens = async () => {
-    const response = await instance.post(`/auth/users/refresh-tokens`);
+    const response = await userInstance.post(`/auth/users/refresh-tokens`);
     return response.data;
 }
 const refreshAdminTokens = async () => {
-    const response = await instance.post(`/auth/admins/refresh-tokens`);
+    const response = await adminInstance.post(`/auth/admins/refresh-tokens`);
     return response.data;
 }
 
@@ -91,7 +89,7 @@ const handleGoogleCallback = async (code: string) => {
         console.error('Failed to parse URL:', error);
     }
     // Fallback to API if redirect did not carry tokens in URL
-    const response = await instance.get(`/auth/users/google/callback?code=${code}`);
+    const response = await userInstance.get(`/auth/users/google/callback?code=${code}`);
     const at = response?.data?.data?.accessToken ?? response?.data?.accessToken;
     const rt = response?.data?.data?.refreshToken ?? response?.data?.refreshToken;
 
@@ -107,23 +105,23 @@ const handleGoogleCallback = async (code: string) => {
 }
 
 const handleGoogleFailure = async () => {
-    const response = await instance.get(`/auth/users/google/failure`);
+    const response = await userInstance.get(`/auth/users/google/failure`);
     return response.data;
 }
 
 // Admin Auth Services
 const adminLogin = async (data: AdminLoginData) => {
-    const response = await instance.post(`/auth/admins/login`, data);
+    const response = await adminInstance.post(`/auth/admins/login`, data);
     return response.data;
 }
 
 const adminVerifyLogin = async (data: AdminVerifyLoginData) => {
-    const response = await instance.post(`/auth/admins/login/verify`, data);
+    const response = await adminInstance.post(`/auth/admins/login/verify`, data);
     return response.data;
 }
 
 const adminLogout = async () => {
-    const response = await instance.post(`/auth/admins/logout`);
+    const response = await adminInstance.post(`/auth/admins/logout`);
     return response.data;
 }
 

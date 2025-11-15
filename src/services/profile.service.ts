@@ -1,4 +1,4 @@
-import instance from "@/lib/axios";
+import instance from "@/lib/axios-user";
 
 type UpdateProfileData = {
     name?: string;
