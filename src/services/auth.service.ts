@@ -1,4 +1,5 @@
 import instance from "@/lib/axios"
+import Cookies from "js-cookie"
 
 // Types
 type RegisterData = {
@@ -22,11 +23,25 @@ type AdminVerifyLoginData = {
 // User Auth Services
 const register = async (data: RegisterData) => {
     const response = await instance.post(`/auth/users/register`, data);
+    const at = response?.data?.data?.accessToken ?? response?.data?.accessToken;
+    const rt = response?.data?.data?.refreshToken ?? response?.data?.refreshToken;
+
+    if (at) {
+        Cookies.set('accessToken', at, { path: '/', sameSite: 'lax', secure: true, expires: 1 / (24 * 4) }); // ~15 minutes
+        (instance.defaults.headers as any).Authorization = `Bearer ${at}`;
+    }
+    if (rt) {
+        Cookies.set('refreshToken', rt, { path: '/', sameSite: 'lax', secure: true, expires: 7 }); // 7 days
+    }
+
     return response.data;
 }
 
 const logout = async () => {
     const response = await instance.post(`/auth/users/logout`);
+    Cookies.remove('accessToken', { path: '/' });
+    Cookies.remove('refreshToken', { path: '/' });
+    delete (instance.defaults.headers as any).Authorization;
     return response.data;
 }
 
@@ -41,7 +56,42 @@ const googleAuth = () => {
 }
 
 const handleGoogleCallback = async (code: string) => {
+    // Prefer tokens returned via frontend URL after backend redirect
+    try {
+        const url = new URL(window.location.href);
+        const accessToken = url.searchParams.get('accessToken');
+        const refreshToken = url.searchParams.get('refreshToken');
+        if (accessToken) {
+            // Persist tokens in frontend cookies
+            Cookies.set('accessToken', accessToken, { path: '/', sameSite: 'lax', secure: true, expires: 1 / (24 * 4) });
+            if (refreshToken) {
+                Cookies.set('refreshToken', refreshToken, { path: '/', sameSite: 'lax', secure: true, expires: 7 });
+            }
+            // Attach for immediate usage
+            (instance.defaults.headers as any).Authorization = `Bearer ${accessToken}`;
+            // Clean tokens from URL
+            url.searchParams.delete('accessToken');
+            url.searchParams.delete('refreshToken');
+            const newUrl = url.pathname + (url.search ? url.search : '') + url.hash;
+            window.history.replaceState({}, '', newUrl);
+            return { accessToken, refreshToken };
+        }
+    } catch (error) {
+        console.error('Failed to parse URL:', error);
+    }
+    // Fallback to API if redirect did not carry tokens in URL
     const response = await instance.get(`/auth/users/google/callback?code=${code}`);
+    const at = response?.data?.data?.accessToken ?? response?.data?.accessToken;
+    const rt = response?.data?.data?.refreshToken ?? response?.data?.refreshToken;
+
+    if (at) {
+        Cookies.set('accessToken', at, { path: '/', sameSite: 'lax', secure: true, expires: 1 / (24 * 4) });
+        (instance.defaults.headers as any).Authorization = `Bearer ${at}`;
+    }
+    if (rt) {
+        Cookies.set('refreshToken', rt, { path: '/', sameSite: 'lax', secure: true, expires: 7 });
+    }
+
     return response.data;
 }
 

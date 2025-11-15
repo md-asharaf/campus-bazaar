@@ -12,6 +12,7 @@ import {
 import { createMutationFn, handleApiError } from '@/utils/api-helpers';
 import { queryKeys } from './query-keys';
 import type { User } from '@/types';
+import Cookies from 'js-cookie';
 
 // Types
 type RegisterData = {
@@ -143,7 +144,9 @@ export const useAdminVerifyLogin = () => {
 
   return useMutation({
     mutationFn: createMutationFn<AdminAuthResponse, AdminVerifyLoginData>(adminVerifyLogin),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      Cookies.set('accessToken', data.accessToken, { path: '/', sameSite: 'lax', secure: true, expires: 1/(24*4) });
+      Cookies.set('refreshToken', data.refreshToken, { path: '/', sameSite: 'lax', secure: true, expires: 7 });
       localStorage.setItem('userRole', 'admin');
       toast.success('Admin login successful!');
     },

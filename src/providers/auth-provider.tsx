@@ -2,6 +2,7 @@ import type { User, ApiResponse } from "@/types";
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { logout as signout } from "@/services/auth.service";
 import { getMe } from "@/services/profile.service";
+import instance from "@/lib/axios";
 
 import { AuthContext } from "@/contexts/auth-context";
 
@@ -13,6 +14,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (fetched.current) return;
         fetched.current = true;
+        // Capture bearer tokens from Google redirect query and set Authorization header
+        try {
+            const url = new URL(window.location.href);
+            const at = url.searchParams.get('accessToken');
+            const rt = url.searchParams.get('refreshToken');
+            if (at) {
+                instance.defaults.headers.Authorization = `Bearer ${at}`;
+            }
+            // Clean tokens from URL while preserving other params
+            if (at || rt) {
+                url.searchParams.delete('accessToken');
+                url.searchParams.delete('refreshToken');
+                const newUrl = url.pathname + (url.search ? url.search : '') + url.hash;
+                window.history.replaceState({}, '', newUrl);
+            }
+        } catch (error) {
+            console.error('Failed to parse URL:', error);
+        }
         (async () => {
             try {
                 const res: ApiResponse<{ user: User }> = await getMe();

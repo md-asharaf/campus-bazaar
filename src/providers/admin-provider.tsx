@@ -4,6 +4,8 @@ import { AdminAuthContext } from "@/contexts/admin-context";
 import { adminLogout } from "@/services/auth.service";
 import type { Admin, ApiResponse } from "@/types";
 import { adminService } from "@/services";
+import Cookies from "js-cookie";
+import instance from "@/lib/axios";
 
 export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     const [admin, setAdmin] = useState<Admin | null>(null);
@@ -42,6 +44,9 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
             console.error('Admin logout error:', error);
         } finally {
+            Cookies.remove('accessToken', { path: '/' });
+            Cookies.remove('refreshToken', { path: '/' });
+            delete (instance.defaults.headers as any).Authorization;
             setAdmin(null);
         }
     }, []);

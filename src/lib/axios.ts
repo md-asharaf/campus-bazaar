@@ -1,4 +1,4 @@
-import { refreshTokens } from "@/services/auth.service";
+import Cookies from "js-cookie";
 import axios from "axios";
 
 const instance = axios.create({
@@ -22,12 +22,32 @@ function flushQueue(err?: any) {
   waitQueue = [];
 }
 
+instance.interceptors.request.use((config) => {
+  const at = Cookies.get('accessToken');
+  if (at) {
+    config.headers = config.headers ?? {};
+    (config.headers as any).Authorization = `Bearer ${at}`;
+  }
+  return config;
+});
+
 instance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const at = response?.data?.data?.accessToken ?? response?.data?.accessToken;
+    const rt = response?.data?.data?.refreshToken ?? response?.data?.refreshToken;
+    if (at) {
+      Cookies.set('accessToken', at, { path: '/', sameSite: 'lax', secure: true, expires: 1/(24*4) }); // ~15 minutes
+    }
+    if (rt) {
+      Cookies.set('refreshToken', rt, { path: '/', sameSite: 'lax', secure: true, expires: 7 }); // 7 days
+    }
+    return response;
+  },
   async (error) => {
     const status = error?.response?.status;
     const original = error.config;
-    if (status !== 401 || !original) {
+    const url = typeof original?.url === 'string' ? original.url : '';
+    if (status !== 401 || !original || url.includes('/refresh-tokens')) {
       return Promise.reject(error);
     }
     // Avoid re-refreshing same request
@@ -47,7 +67,22 @@ instance.interceptors.response.use(
 
     isRefreshing = true;
     try {
-      await refreshTokens();
+      const isAdmin = url.startsWith('/admins') || url.startsWith('/auth/admins') || url.includes('/admins/');
+      const rt = Cookies.get('refreshToken');
+      const headers = rt ? { Authorization: `Bearer ${rt}` } : {};
+      if (isAdmin) {
+        const resp = await instance.post('/auth/admins/refresh-tokens', undefined, { headers });
+        const newAT = resp?.data?.data?.accessToken ?? resp?.data?.accessToken;
+        const newRT = resp?.data?.data?.refreshToken ?? resp?.data?.refreshToken;
+        if (newAT) Cookies.set('accessToken', newAT, { path: '/', sameSite: 'lax', secure: true, expires: 1/(24*4) });
+        if (newRT) Cookies.set('refreshToken', newRT, { path: '/', sameSite: 'lax', secure: true, expires: 7 });
+      } else {
+        const resp = await instance.post('/auth/users/refresh-tokens', undefined, { headers });
+        const newAT = resp?.data?.data?.accessToken ?? resp?.data?.accessToken;
+        const newRT = resp?.data?.data?.refreshToken ?? resp?.data?.refreshToken;
+        if (newAT) Cookies.set('accessToken', newAT, { path: '/', sameSite: 'lax', secure: true, expires: 1/(24*4) });
+        if (newRT) Cookies.set('refreshToken', newRT, { path: '/', sameSite: 'lax', secure: true, expires: 7 });
+      }
       flushQueue();
       return instance(original);
     } catch (e) {
