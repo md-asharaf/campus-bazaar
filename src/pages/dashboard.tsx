@@ -58,7 +58,7 @@ export function Dashboard() {
 
   // Redirect to login if not authenticated
   if (shouldRedirect) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/student-login" replace />;
   }
 
   if (!user) {

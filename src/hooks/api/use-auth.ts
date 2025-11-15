@@ -65,6 +65,8 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: createMutationFn<{ message: string }, void>(logout),
     onSuccess: () => {
+      Cookies.remove('user_accessToken', { path: '/' });
+      Cookies.remove('user_refreshToken', { path: '/' });
       toast.success('Logged out successfully');
     },
     onError: (error) => {
@@ -145,8 +147,8 @@ export const useAdminVerifyLogin = () => {
   return useMutation({
     mutationFn: createMutationFn<AdminAuthResponse, AdminVerifyLoginData>(adminVerifyLogin),
     onSuccess: (data) => {
-      Cookies.set('accessToken', data.accessToken, { path: '/', sameSite: 'lax', secure: true, expires: 1/(24*4) });
-      Cookies.set('refreshToken', data.refreshToken, { path: '/', sameSite: 'lax', secure: true, expires: 7 });
+      Cookies.set('admin_accessToken', data.accessToken, { path: '/', sameSite: 'lax', secure: true, expires: 1/(24*4) });
+      Cookies.set('admin_refreshToken', data.refreshToken, { path: '/', sameSite: 'lax', secure: true, expires: 7 });
       localStorage.setItem('userRole', 'admin');
       toast.success('Admin login successful!');
     },

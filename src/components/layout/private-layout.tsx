@@ -58,7 +58,7 @@ export const PrivateLayout = () => {
       <br />
       <div className="flex items-center justify-center gap-4">
         <Button onClick={() => {
-          navigate('/login');
+          navigate('/student-login');
         }}>
           Login
         </Button>

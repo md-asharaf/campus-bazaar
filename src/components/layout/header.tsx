@@ -228,7 +228,7 @@ export const Header = () => {
                                     </Button>
                                 </motion.div>
                             </Link>
-                            <Link to="/login">
+                            <Link to="/student-login">
                               <Button variant="outline" className="rounded-full" size={isHomePage ? "default" : "sm"}>
                                 Login
                               </Button>
@@ -333,7 +333,7 @@ export const Header = () => {
                                         >
                                             Sell Item
                                         </Link>
-                                        <Link to="/login">
+                                        <Link to="/student-login">
                                           <Button>
                                             Login
                                           </Button>

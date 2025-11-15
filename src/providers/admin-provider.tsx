@@ -44,8 +44,8 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
             console.error('Admin logout error:', error);
         } finally {
-            Cookies.remove('accessToken', { path: '/' });
-            Cookies.remove('refreshToken', { path: '/' });
+            Cookies.remove('admin_accessToken', { path: '/' });
+            Cookies.remove('admin_refreshToken', { path: '/' });
             delete (instance.defaults.headers as any).Authorization;
             setAdmin(null);
         }

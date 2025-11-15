@@ -97,7 +97,7 @@ export function CreateItem() {
               <p className="text-muted-foreground">
                 Please log in to sell items on Campus Bazaar
               </p>
-              <Link to="/login?from=/sell">
+              <Link to="/student-login?from=/sell">
                 <Button>Login</Button>
               </Link>
             </CardContent>

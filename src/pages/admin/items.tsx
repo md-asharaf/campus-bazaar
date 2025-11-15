@@ -36,7 +36,7 @@ function ItemCard({ item, onAction }: { item: any; onAction: (id: string, action
           <div className="flex items-center gap-3">
             <img
               src={item?.images?.[0]?.url || '/placeholder-item.jpg'}
-              alt={item.title}
+              alt={"N/A"}
               className="w-12 h-12 rounded object-cover"
             />
             <div>

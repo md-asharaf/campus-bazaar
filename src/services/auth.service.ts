@@ -27,11 +27,11 @@ const register = async (data: RegisterData) => {
     const rt = response?.data?.data?.refreshToken ?? response?.data?.refreshToken;
 
     if (at) {
-        Cookies.set('accessToken', at, { path: '/', sameSite: 'lax', secure: true, expires: 1 / (24 * 4) }); // ~15 minutes
-        (instance.defaults.headers as any).Authorization = `Bearer ${at}`;
+        Cookies.set('user_accessToken', at, { path: '/', sameSite: 'lax', secure: true, expires: 1 / (24 * 4) }); // ~15 minutes
+        // Authorization header is set by axios interceptor
     }
     if (rt) {
-        Cookies.set('refreshToken', rt, { path: '/', sameSite: 'lax', secure: true, expires: 7 }); // 7 days
+        Cookies.set('user_refreshToken', rt, { path: '/', sameSite: 'lax', secure: true, expires: 7 }); // 7 days
     }
 
     return response.data;
@@ -39,6 +39,9 @@ const register = async (data: RegisterData) => {
 
 const logout = async () => {
     const response = await instance.post(`/auth/users/logout`);
+    Cookies.remove('user_accessToken', { path: '/' });
+    Cookies.remove('user_refreshToken', { path: '/' });
+    // Remove legacy cookie keys if present
     Cookies.remove('accessToken', { path: '/' });
     Cookies.remove('refreshToken', { path: '/' });
     delete (instance.defaults.headers as any).Authorization;
@@ -47,6 +50,14 @@ const logout = async () => {
 
 const refreshTokens = async () => {
     const response = await instance.post(`/auth/users/refresh-tokens`);
+    return response.data;
+}
+const refreshUserTokens = async () => {
+    const response = await instance.post(`/auth/users/refresh-tokens`);
+    return response.data;
+}
+const refreshAdminTokens = async () => {
+    const response = await instance.post(`/auth/admins/refresh-tokens`);
     return response.data;
 }
 
@@ -63,12 +74,12 @@ const handleGoogleCallback = async (code: string) => {
         const refreshToken = url.searchParams.get('refreshToken');
         if (accessToken) {
             // Persist tokens in frontend cookies
-            Cookies.set('accessToken', accessToken, { path: '/', sameSite: 'lax', secure: true, expires: 1 / (24 * 4) });
+            Cookies.set('user_accessToken', accessToken, { path: '/', sameSite: 'lax', secure: true, expires: 1 / (24 * 4) });
             if (refreshToken) {
-                Cookies.set('refreshToken', refreshToken, { path: '/', sameSite: 'lax', secure: true, expires: 7 });
+                Cookies.set('user_refreshToken', refreshToken, { path: '/', sameSite: 'lax', secure: true, expires: 7 });
             }
             // Attach for immediate usage
-            (instance.defaults.headers as any).Authorization = `Bearer ${accessToken}`;
+            // Authorization header is set by axios interceptor
             // Clean tokens from URL
             url.searchParams.delete('accessToken');
             url.searchParams.delete('refreshToken');
@@ -85,11 +96,11 @@ const handleGoogleCallback = async (code: string) => {
     const rt = response?.data?.data?.refreshToken ?? response?.data?.refreshToken;
 
     if (at) {
-        Cookies.set('accessToken', at, { path: '/', sameSite: 'lax', secure: true, expires: 1 / (24 * 4) });
-        (instance.defaults.headers as any).Authorization = `Bearer ${at}`;
+        Cookies.set('user_accessToken', at, { path: '/', sameSite: 'lax', secure: true, expires: 1 / (24 * 4) });
+        // Authorization header is set by axios interceptor
     }
     if (rt) {
-        Cookies.set('refreshToken', rt, { path: '/', sameSite: 'lax', secure: true, expires: 7 });
+        Cookies.set('user_refreshToken', rt, { path: '/', sameSite: 'lax', secure: true, expires: 7 });
     }
 
     return response.data;
@@ -121,6 +132,8 @@ export {
     register,
     logout,
     refreshTokens,
+    refreshUserTokens,
+    refreshAdminTokens,
 
     // Google auth
     googleAuth,

@@ -54,7 +54,7 @@ export function Wishlist() {
 
   // Redirect if not authenticated
   if (!authLoading && !user) {
-    return <Navigate to="/login?from=/wishlist" replace />;
+    return <Navigate to="/student-login?from=/wishlist" replace />;
   }
 
   if (authLoading || isLoading) {

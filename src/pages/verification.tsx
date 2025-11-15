@@ -58,7 +58,7 @@ export function Verification() {
 
   // Redirect if not authenticated
   if (!authLoading && !user) {
-    return <Navigate to="/login?from=/verify" replace />;
+    return <Navigate to="/student-login?from=/verify" replace />;
   }
 
   if (authLoading) {

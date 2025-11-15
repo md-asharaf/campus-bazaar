@@ -15,6 +15,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import Cookies from 'js-cookie';
 
 export function AdminLayout() {
   const { admin, loading, logout } = useAdminAuth();
@@ -24,14 +25,17 @@ export function AdminLayout() {
 
   useEffect(() => {
     if (!loading && !admin && location.pathname.startsWith('/admin')) {
-      navigate('/login')
+      navigate('/admin-login')
       return;
     }
-  }, [admin, loading, location.pathname]);
+  }, [admin, loading, location.pathname,navigate]);
 
   const handleLogout = async () => {
     try {
       await logout();
+      // Also clear any user tokens to avoid token mixing
+      Cookies.remove('user_accessToken', { path: '/' });
+      Cookies.remove('user_refreshToken', { path: '/' });
       toast.success('Logged out successfully');
     } catch (error) {
       toast.error('Failed to log out');
@@ -47,7 +51,7 @@ export function AdminLayout() {
   }
 
   if (!admin) {
-    return <Navigate to="/login?from=/admin" replace />;
+    return <Navigate to="/admin-login?from=/admin" replace />;
   }
 
   const navItems = [
