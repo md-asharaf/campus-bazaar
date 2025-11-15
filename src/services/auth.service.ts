@@ -45,11 +45,6 @@ const logout = async () => {
 // Legacy cookie cleanup removed; Authorization header handled by axios interceptors
     return response.data;
 }
-
-const refreshTokens = async () => {
-    const response = await userInstance.post(`/auth/users/refresh-tokens`);
-    return response.data;
-}
 const refreshUserTokens = async () => {
     const response = await userInstance.post(`/auth/users/refresh-tokens`);
     return response.data;
@@ -129,7 +124,6 @@ export {
     // User auth
     register,
     logout,
-    refreshTokens,
     refreshUserTokens,
     refreshAdminTokens,
 

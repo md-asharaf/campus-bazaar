@@ -3,11 +3,11 @@ import { toast } from 'sonner';
 import {
   register,
   logout,
-  refreshTokens,
   googleAuth,
   handleGoogleCallback,
   adminLogin,
   adminVerifyLogin,
+  refreshUserTokens,
 } from '@/services/auth.service';
 import { createMutationFn, handleApiError } from '@/utils/api-helpers';
 import { queryKeys } from './query-keys';
@@ -82,7 +82,7 @@ export const useRefreshTokens = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createMutationFn<AuthResponse, void>(refreshTokens),
+    mutationFn: createMutationFn<AuthResponse, void>(refreshUserTokens),
     onSuccess: (data) => {
       queryClient.setQueryData(queryKeys.profile.me(), data.user);
     },
